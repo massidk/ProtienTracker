@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace ProteinTrackerMVC.Api
+namespace ProteinTracker.Api
 {
-    public interface IRepository
+    public interface IRepository 
     {
         long AddUser(string name, int goal);
         IEnumerable<User> GetUsers();

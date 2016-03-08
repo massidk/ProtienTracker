@@ -1,4 +1,4 @@
-namespace ProteinTrackerMVC.Api
+namespace ProteinTracker.Api
 {
     public class AddProteinResponse
     {

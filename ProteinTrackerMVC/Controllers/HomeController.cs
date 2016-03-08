@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace ProteinTrackerMVC.Controllers
+namespace ProteinTracker.Controllers
 {
     public class HomeController : Controller
     {

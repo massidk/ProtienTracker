@@ -1,7 +1,7 @@
 ﻿using ServiceStack;
 using ServiceStack.ServiceHost;
 
-namespace ProteinTrackerMVC.Api
+namespace ProteinTracker.Api
 {
     [Route("/users", "POST")]
     public class AddUser

@@ -7,63 +7,150 @@ using System.Web;
 using ServiceStack.OrmLite;
 using ServiceStack.OrmLite.SqlServer;
 using System.Configuration;
+using System.Data;
+using System.Linq.Expressions;
+using ServiceStack.Common.Utils;
+using ServiceStack.Text;
 
-namespace ProteinTrackerMVC.Api
+namespace ProteinTracker.Api
 {
-    public class SqlRepository :IRepository
+    public class SqlRepository :IRepository 
     {
-        string connection =  ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+        private string conStr;
+        private SqlConnection con;
+        private SqlCommand cmd;
+        private IEnumerable<User> userList;
 
         public SqlRepository()
         {
-            
+            conStr = ConfigurationManager.ConnectionStrings["SqlConnection"].ConnectionString;
         }
         public long AddUser(string name, int goal)
         {
-            User user = new User {Goal = goal,Id = 0,Name = name,Total = 0};
-            
-            using (SqlConnection con = new SqlConnection(connection))
+            //Oprettter nu bruger i db
+            using (con = new SqlConnection(conStr))
+            using (cmd = new SqlCommand("insert into dbo_User(Name, Goal, Total, Id) values (@name, @goal, @total, @id)",con))
             {
                 con.Open();
-                using (SqlCommand cmd = new SqlCommand("select * from dbo_User"))
-                {
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            //count entities from db
-                            int count =+ 1;
-                            //insert id into insert statement below
-                            user.Id = count;
-                        }
+                long id = 0;
+                if (userList == null)
+                    id = 1;
+                else
+                id = userList.LongCount()+1;
+                User u = new User() { Name = name, Goal = goal, Id = id};
 
-                    }
-                }
-                using (
-                    SqlCommand cmd =
-                        new SqlCommand("insert into dbo_User(Name, Goal, Total) values(@Name, @Goal, @Total)"))
-                {
-                    cmd.Parameters.Add(new SqlParameter("@Name", user.Name));
-                    cmd.Parameters.Add(new SqlParameter("@Goal", user.Goal));
-                    cmd.Parameters.Add(new SqlParameter("@Total", user.Total));
-                }
-                return user.Id;
+                SqlParameter param = new SqlParameter();
+                param.ParameterName = "@name";
+                param.Value = name;
+                param.SqlDbType = SqlDbType.Char;
+                cmd.Parameters.Add(param);
+                
+                param = new SqlParameter();
+                param.ParameterName = "@goal";
+                param.Value = goal;
+                param.SqlDbType = SqlDbType.Int;
+                cmd.Parameters.Add(param);
+
+                param = new SqlParameter();
+                param.ParameterName = "@total";
+                param.Value = 0;
+                param.SqlDbType = SqlDbType.Int;
+                cmd.Parameters.Add(param);
+
+                param = new SqlParameter();
+                param.ParameterName = "@id";
+                param.Value = id;
+                param.SqlDbType = SqlDbType.BigInt;
+                cmd.Parameters.Add(param);
+
+                cmd.ExecuteNonQuery();
+                con.Close();
+                //GetUsers();
+                return u.Id;
             }
         }
 
         public IEnumerable<User> GetUsers()
         {
-            throw new NotImplementedException();
+            PopulateUsers();
+            return userList;
         }
 
-        public User GetUsers(long userId)
+        private void PopulateUsers()
         {
-            throw new NotImplementedException();
+            //Opdatere userList
+            using (con = new SqlConnection(conStr))
+            using (cmd = new SqlCommand("select * from dbo_User", con))
+            {
+                con.Open();
+                List<User> list = new List<User>();
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        list.Add(new User
+                        {
+                            Name = reader.GetString(0),
+                            Goal = reader.GetInt32(1),
+                            Total = reader.GetInt32(2),
+                            Id = reader.GetInt64(3)
+                        });
+                    }
+                }
+                con.Close();
+                userList = list;
+            }
+        }
+
+        public User GetUsers(long userId) 
+        {
+            //Retunere bestemt user
+            int i = 0;
+            List<User> uList = userList.ToList();
+            while (uList[i].Id != userId)
+            {
+                i++;
+            }
+            return uList[i];
         }
 
         public void UpdateUser(User user)
         {
-            throw new NotImplementedException();
+            using (con = new SqlConnection(conStr))
+            using (
+                cmd =
+                    new SqlCommand("update dbo_User set Name = @name, Goal = @goal, Total = @total where Id = @id", con)
+                )
+            {
+                con.Open();
+                SqlParameter param = new SqlParameter();
+                param.ParameterName = "@name";
+                param.Value = user.Name;
+                param.SqlDbType = SqlDbType.VarChar;
+                cmd.Parameters.Add(param);
+
+                param = new SqlParameter();
+                param.ParameterName = "@goal";
+                param.Value = user.Goal;
+                param.SqlDbType = SqlDbType.Int;
+                cmd.Parameters.Add(param);
+
+                param = new SqlParameter();
+                param.ParameterName = "@total";
+                param.Value = user.Total;
+                param.SqlDbType = SqlDbType.Int;
+                cmd.Parameters.Add(param);
+
+                param = new SqlParameter();
+                param.ParameterName = "@id";
+                param.Value = user.Id;
+                param.SqlDbType = SqlDbType.Int;
+                cmd.Parameters.Add(param);
+
+                cmd.ExecuteNonQuery();
+                con.Close();
+                //GetUsers();
+            }
         }
     }
 }

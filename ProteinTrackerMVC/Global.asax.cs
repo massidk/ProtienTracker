@@ -11,18 +11,17 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Funq;
-using ProteinTrackerMVC.Api;
 using ServiceStack;
 using ServiceStack.OrmLite;
 using ServiceStack.OrmLite.Dapper;
 using ServiceStack.Redis;
 using ServiceStack.WebHost.Endpoints;
 using ServiceStack.OrmLite.SqlServer;
-using System.Configuration;
 using System.Web.Configuration;
+using ProteinTracker.Api;
 using ServiceStack.Configuration;
 
-namespace ProteinTrackerMVC
+namespace ProteinTracker
 {
     // Note: For instructions on enabling IIS6 or IIS7 classic mode, 
     // visit http://go.microsoft.com/?LinkId=9394801
@@ -54,9 +53,9 @@ namespace ProteinTrackerMVC
             IRepository repo = factory.GetRepository(WebConfigurationManager.AppSettings["dbo"]);
             //container.Register<IRedisClientsManager>(c => new PooledRedisClientManager());
             //container.Register<IRepository>(c => new RedisRepository(c.Resolve<IRedisClientsManager>()));
-            
-            container.RegisterAutoWired<repo>();
-            container.RegisterAutoWiredAs<repo, IRepository>();
+            container.Register(repo);
+            //container.RegisterAutoWired<SqlRepository>();
+            //container.RegisterAutoWiredAs<repo, IRepository>();
         }
     }
 }

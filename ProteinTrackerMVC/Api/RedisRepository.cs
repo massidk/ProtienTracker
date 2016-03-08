@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using ServiceStack.Redis;
 
-namespace ProteinTrackerMVC.Api
+namespace ProteinTracker.Api
 {
     public class RedisRepository : IRepository
     {

@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Optimization;
 
-namespace ProteinTrackerMVC
+namespace ProteinTracker
 {
     public class BundleConfig
     {

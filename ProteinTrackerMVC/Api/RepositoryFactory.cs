@@ -3,21 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Web;
-using ProteinTrackerMVC.Api;
+using ProteinTracker.Api;
+using ServiceStack.Redis;
 
-namespace ProteinTrackerMVC.Api
+namespace ProteinTracker.Api
 {
     public class RepositoryFactory
-    { 
-
+    {
+        IRedisClientsManager RedisManager { get; set; }
         public IRepository GetRepository(string inc)
         {
             string asm = inc;
-            //if(asm == "Redis")
-                //return new RedisRepository();
+            if(asm == "Redis")
+                return new RedisRepository(RedisManager);
 
             if(asm == "Sql")
                     return new SqlRepository();
+            
             return null;
         }
     }

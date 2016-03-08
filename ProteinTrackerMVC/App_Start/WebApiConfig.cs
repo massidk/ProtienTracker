@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 
-namespace ProteinTrackerMVC
+namespace ProteinTracker
 {
     public static class WebApiConfig
     {

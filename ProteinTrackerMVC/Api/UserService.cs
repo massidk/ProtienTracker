@@ -3,7 +3,7 @@ using System.Linq;
 using System.Web;
 using ServiceStack.ServiceInterface;
 
-namespace ProteinTrackerMVC.Api
+namespace ProteinTracker.Api
 {
     public class UserService : Service
     {

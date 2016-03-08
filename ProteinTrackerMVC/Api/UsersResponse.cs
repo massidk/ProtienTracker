@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ProteinTrackerMVC.Api
+namespace ProteinTracker.Api
 {
     public class UsersResponse
     {
