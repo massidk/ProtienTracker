@@ -23,7 +23,8 @@ namespace ProteinTracker.Api
 
         public SqlRepository()
         {
-            conStr = ConfigurationManager.ConnectionStrings["SqlConnection"].ConnectionString;
+            //conStr = ConfigurationManager.ConnectionStrings["SqlConnection"].ConnectionString;
+            conStr = ConfigurationManager.ConnectionStrings["SurftownConnection"].ConnectionString;
         }
         public long AddUser(string name, int goal)
         {
